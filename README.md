@@ -5,7 +5,7 @@ Dockerfile repo for pyicloud
 alpine:latest
 
 # pyicloud Version
-| map(tonumber)) | .[-1]')
+0.10.2
 
 # Docker Hub repository
 [yuuki0805/pyicloud](https://hub.docker.com/r/yuuki0805/pyicloud)
