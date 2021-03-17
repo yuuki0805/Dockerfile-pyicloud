@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
+    steps:
+      - name: Initialize
+        run: |
+          apt-get update
+          apt-get install -y curl jq git
+      - name: Release version
+        run: |
+          set -e
+          echo "PYICLOUD_VERSION=$(curl -s https://pypi.org/pypi/pyicloud/json | jq --raw-output '.releases | keys | sort_by(. | split(\".\") | map(tonumber)) | .[-1]')" >> $GITHUB_ENV
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup git
+        run: |
+          git config push.default current
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Push Tag
+        run: |
+          set -e
+          sed -i -e "/^# pyicloud Version$/{n;d;}" README.md
+          sed -i -e "/^# pyicloud Version$/a $PYICLOUD_VERSION" README.md
+          git add README.md
+          set +e
+          git commit -m "Bump version $PYICLOUD_VERSION from GitHub Actions"
+          set -e
+          git push origin
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          tag_name: ${{ env.PYICLOUD_VERSION }}
+          release_name: Release ${{ env.PYICLOUD_VERSION}}
+          draft: false
+          prerelease: false
+      - name: Slack Notification on Success
+        uses: rtCamp/action-slack-notify@v2
+        if: success()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ci
+          SLACK_TITLE: CI Success (${{ github.repository }})
+          SLACK_COLOR: good
+      - name: Slack Notification on Failure
+        uses: rtCamp/action-slack-notify@v2
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ci
+          SLACK_TITLE: CI Failure (${{ github.repository }})
+          SLACK_COLOR: danger
