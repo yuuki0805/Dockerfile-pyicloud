@@ -1,5 +1,6 @@
 FROM python:alpine
 RUN apk --no-cache add --virtual build-dependencies gcc musl-dev python3-dev libffi-dev openssl-dev cargo && \
+    pip install --upgrade pip && \
     pip install --no-cache-dir pyicloud && \
     rm -rf /root/.cache && \
     rm -rf /root/.cargo/git && \
