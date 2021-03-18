@@ -8,12 +8,11 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    container: ubuntu:latest
     steps:
       - name: Initialize
         run: |
-          apt-get update
-          apt-get install -y git
+          sudo apt-get update
+          sudo apt-get install -y git
       - name: Branch env
         run: |
           echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
