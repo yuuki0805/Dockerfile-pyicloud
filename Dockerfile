@@ -1,10 +1,9 @@
-FROM python:alpine3.12
+FROM python:alpine
 RUN apk --no-cache add --virtual build-dependencies gcc musl-dev python3-dev libffi-dev openssl-dev cargo && \
     python -m pip install -U pip && \
-    pip install pyicloud && \
+    pip install --no-cache-dir pyicloud && \
     rm -rf /root/.cache && \
-    rm -rf /root/.cargo/git && \
-    rm -rf /root/.cargo/registry && \
+    rm -rf /root/.cargo && \
     apk del --purge build-dependencies
 RUN mkdir /docker
 COPY docker-entrypoint.sh /usr/local/bin
