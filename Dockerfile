@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:alpine3.12
 RUN apk --no-cache add --virtual build-dependencies gcc musl-dev python3-dev libffi-dev openssl-dev cargo && \
     python -m pip install -U pip && \
     pip install pyicloud && \
