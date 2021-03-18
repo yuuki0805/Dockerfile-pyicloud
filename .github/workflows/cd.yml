@@ -26,9 +26,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: config
-        run: |
-          cat ~/.gitconfig
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Build and Push to Docker Hub
