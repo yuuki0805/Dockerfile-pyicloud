@@ -42,6 +42,8 @@ jobs:
         with:
           context: .
           platforms: linux/arm/v6
+          build-args: |
+            --security-opt=seccomp=unconfined
           push: true
           tags: |
             yuuki0805/pyicloud:${{ env.SOURCE_TAG }}
