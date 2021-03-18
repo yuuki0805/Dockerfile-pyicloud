@@ -8,7 +8,12 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    container: ubuntu:latest
     steps:
+      - name: Initialize
+        run: |
+          apt-get update
+          apt-get install -y git
       - name: Branch env
         run: |
           echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -19,6 +24,11 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
+      - name: Setup git
+        run: |
+          git config push.default current
+          git config user.name github-actions
+          git config user.email github-actions@github.com
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Login to DockerHub
