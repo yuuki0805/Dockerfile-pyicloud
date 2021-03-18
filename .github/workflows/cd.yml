@@ -9,10 +9,6 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - name: Initialize
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git
       - name: Branch env
         run: |
           echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -20,16 +16,8 @@ jobs:
           echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Setup git
-        run: |
-          git config push.default current
-          git config user.name github-actions
-          git config user.email github-actions@github.com
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -41,9 +29,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/arm/v6
-          build-args: |
-            --security-opt=seccomp=unconfined
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             yuuki0805/pyicloud:${{ env.SOURCE_TAG }}
